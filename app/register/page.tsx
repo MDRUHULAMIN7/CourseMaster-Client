@@ -1,30 +1,20 @@
-// client/app/register/page.tsx
-'use client';
 
+'use client'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-
-interface FormData {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role: 'student' | 'instructor';
-  photo?: string;
-  gender?: string;
-  dateOfBirth?: string;
-  address?: string;
-  phoneNumber?: string;
-}
-
+import toast from 'react-hot-toast';
+import { Mail, Lock, UserPlus } from 'lucide-react';
+import type { RegisterFormData } from '../../types/Types';
+import LeftSideBranding from './_components/LeftSideBranding';
+import RoleSelection from './_components/RoleSelection';
+import FormInput from './_components/FormInput';
 interface FormErrors {
   [key: string]: string;
 }
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<RegisterFormData>({
     fullName: '',
     email: '',
     password: '',
@@ -80,9 +70,10 @@ export default function RegisterPage() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    const loadingToast = toast.loading('Creating your account...');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,175 +82,159 @@ export default function RegisterPage() {
       });
 
       const data = await response.json();
-    console.log(data)
+      
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
+      toast.dismiss(loadingToast);
+      toast.success('Account created successfully! Redirecting...', {
+        duration: 3000,
+      });
 
       // Store token
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
 
-      // Redirect based on role
-      if (data.data.user.role === 'student') {
-        router.push('/');
-      } else if (data.data.user.role === 'instructor') {
-        router.push('/');
-      }
+      // Wait for toast to show before redirecting
+      setTimeout(() => {
+        if (data.data.user.role === 'student') {
+          router.push('/dashboard');
+        } else if (data.data.user.role === 'instructor') {
+          router.push('/instructor/dashboard');
+        }
+      }, 1500);
+
     } catch (error: any) {
-      setApiError(error.message || 'Something went wrong');
+      toast.dismiss(loadingToast);
+      const errorMessage = error.message || 'Something went wrong';
+      setApiError(errorMessage);
+      toast.error(errorMessage, {
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Create Your Account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join CourseMaster and start learning today
-          </p>
+    <div className="min-h-screen  flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="md:flex">
+          {/* Left side - Branding/Info */}
+          <LeftSideBranding />
+
+          {/* Right side - Registration Form */}
+          <div className="md:w-3/5 p-4 md:p-8">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold text-gray-900">
+                Create Your Account
+              </h2>
+              <p className="mt-2 text-gray-600">
+                Join CourseMaster and unlock endless learning opportunities
+              </p>
+            </div>
+
+            {apiError && (
+              <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r animate-fade-in">
+                <div className="flex">
+                  <div className="shrink-0">
+                    <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">{apiError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Role Selection */}
+              <RoleSelection formData={formData} setFormData={setFormData} />
+
+              {/* Full Name */}
+              <FormInput
+                id="fullName"
+                name="fullName"
+                type="text"
+                label="Full Name *"
+                value={formData.fullName}
+                placeholder="John Doe"
+                error={errors.fullName}
+                icon={UserPlus}
+                onChange={handleChange}
+              />
+
+              {/* Email */}
+              <FormInput
+                id="email"
+                name="email"
+                type="email"
+                label="Email Address *"
+                value={formData.email}
+                placeholder="john@example.com"
+                error={errors.email}
+                icon={Mail}
+                onChange={handleChange}
+              />
+
+              {/* Password Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormInput
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Password *"
+                  value={formData.password}
+                  placeholder="••••••••"
+                  error={errors.password}
+                  icon={Lock}
+                  onChange={handleChange}
+                  optionalText="At least 6 characters"
+                />
+
+                <FormInput
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  label="Confirm Password *"
+                  value={formData.confirmPassword}
+                  placeholder="••••••••"
+                  error={errors.confirmPassword}
+                  icon={Lock}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-linear-to-r from-blue-600 to-purple-700 text-white py-3.5 rounded-xl font-semibold hover:from-purple-700 hover:to-blue-800 transition-all duration-300 transform hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Creating Account...
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-5 w-5 mr-2" />
+                      Create Account
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        {apiError && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            {apiError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Role Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              I want to register as *
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, role: 'student' })}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  formData.role === 'student'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="font-medium">Student</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, role: 'instructor' })}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  formData.role === 'instructor'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="font-medium">Instructor</div>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Full Name */}
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name *
-            </label>
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="John Doe"
-            />
-            {errors.fullName && (
-              <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
-            )}
-          </div>
-
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="john@example.com"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password *
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password *
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-              )}
-            </div>
-          </div>
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
-          </button>
-
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-              Login here
-            </Link>
-          </p>
-        </form>
       </div>
+
+      
     </div>
   );
 }

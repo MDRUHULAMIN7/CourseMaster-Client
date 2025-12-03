@@ -1,10 +1,13 @@
-// client/app/login/page.tsx
+
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import FormInput from '../register/_components/FormInput';
 
+import { Mail, Lock} from 'lucide-react';
+import toast from 'react-hot-toast';
 interface LoginData {
   email: string;
   password: string;
@@ -58,7 +61,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +71,14 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (response.ok) {      
+        toast.success('Login Successfully',{
+        duration: 3000,
+      })
+      }else{
+        toast.error(data.message || 'Login failed',{
+        duration: 3000,
+      })
         throw new Error(data.message || 'Login failed');
       }
 
@@ -77,13 +87,13 @@ export default function LoginPage() {
       localStorage.setItem('user', JSON.stringify(data.data.user));
 
       // Redirect based on role
-      if (data.data.user.role === 'student') {
-        router.push('/dashboard/student');
-      } else if (data.data.user.role === 'instructor') {
-        router.push('/dashboard/instructor');
-      } else if (data.data.user.role === 'admin') {
-        router.push('/dashboard/admin');
-      }
+      // if (data.data.user.role === 'student') {
+      //   router.push('/dashboard/student');
+      // } else if (data.data.user.role === 'instructor') {
+      //   router.push('/dashboard/instructor');
+      // } else if (data.data.user.role === 'admin') {
+      //   router.push('/dashboard/admin');
+      // }
     } catch (error: any) {
       setApiError(error.message || 'Something went wrong');
     } finally {
@@ -95,9 +105,9 @@ export default function LoginPage() {
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Welcome Back </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Login to continue your learning journey
+            Login to continue your learning journey with Course Master
           </p>
         </div>
 
@@ -108,72 +118,33 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="john@example.com"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
+          <FormInput
+                          id="email"
+                          name="email"
+                          type="email"
+                          label="Email Address *"
+                          value={formData.email}
+                          placeholder="john@example.com"
+                          error={errors.email}
+                          icon={Mail}
+                          onChange={handleChange}
+                        />
+             <FormInput
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Password *"
+                  value={formData.password}
+                  placeholder="••••••••"
+                  error={errors.password}
+                  icon={Lock}
+                  onChange={handleChange}
+                />
 
-          {/* Password */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="••••••••"
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-            )}
-          </div>
-
-          {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm text-gray-600">Remember me</span>
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-700"
-            >
-              Forgot password?
-            </Link>
-          </div>
-
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full bg-linear-to-br from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium  transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
@@ -182,7 +153,7 @@ export default function LoginPage() {
             Don't have an account?{' '}
             <Link
               href="/register"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-purple-500 hover:text-purple-700 font-medium"
             >
               Register here
             </Link>
