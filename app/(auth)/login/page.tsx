@@ -1,6 +1,5 @@
 
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -70,6 +69,7 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
+      console.log(data)
 
       if (response.ok) {      
         toast.success('Login Successfully',{
@@ -87,13 +87,9 @@ export default function LoginPage() {
       localStorage.setItem('user', JSON.stringify(data.data.user));
 
       // Redirect based on role
-      // if (data.data.user.role === 'student') {
-      //   router.push('/dashboard/student');
-      // } else if (data.data.user.role === 'instructor') {
-      //   router.push('/dashboard/instructor');
-      // } else if (data.data.user.role === 'admin') {
-      //   router.push('/dashboard/admin');
-      // }
+      if (data.data.user.role) {
+        router.push('/');
+      } 
     } catch (error: any) {
       setApiError(error.message || 'Something went wrong');
     } finally {

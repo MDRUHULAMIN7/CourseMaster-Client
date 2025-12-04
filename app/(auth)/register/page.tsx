@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Mail, Lock, UserPlus } from 'lucide-react';
-import type { RegisterFormData } from '../../types/Types';
+import type { RegisterFormData } from '../../../types/Types';
 import LeftSideBranding from './_components/LeftSideBranding';
 import RoleSelection from './_components/RoleSelection';
 import FormInput from './_components/FormInput';
@@ -94,14 +94,10 @@ export default function RegisterPage() {
       // Store token
       localStorage.setItem('token', data.data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
-
-      // Wait for toast to show before redirecting
       setTimeout(() => {
-        if (data.data.user.role === 'student') {
-          router.push('/dashboard');
-        } else if (data.data.user.role === 'instructor') {
-          router.push('/instructor/dashboard');
-        }
+        if (data.data.user.role) {
+          router.push('/');
+        } 
       }, 1500);
 
     } catch (error: any) {
