@@ -26,7 +26,7 @@ export default function DashboardLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={` mt-18 ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
       

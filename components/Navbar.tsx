@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
@@ -42,6 +41,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
+    localStorage.removeItem("admin_token");
     setUser(null);
     setMenuOpen(false);
     setProfileDropdown(false);
