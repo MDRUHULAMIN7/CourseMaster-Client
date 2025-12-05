@@ -178,7 +178,7 @@ export default function CourseTable({ courses }: CourseTableProps) {
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <Link
-                      href={`/courses/${course._id}`}
+                      href={`/admin/courses/${course._id}`}
                       className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                       title="View"
                     >

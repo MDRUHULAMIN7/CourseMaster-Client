@@ -1,4 +1,4 @@
-// app/admin/courses/edit/[id]/page.tsx
+
 import { notFound } from 'next/navigation';
 import CourseForm from '../../components/CourseForm';
 

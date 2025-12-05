@@ -1,4 +1,4 @@
-// app/admin/courses/[id]/components/CourseStats.tsx
+
 'use client';
 
 import { Users, Calendar, Target, FileCheck } from 'lucide-react';

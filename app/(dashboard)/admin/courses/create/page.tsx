@@ -1,5 +1,5 @@
-// app/admin/courses/create/page.tsx
-import CourseForm from '../components/CourseForm';
+import CourseForm from "../components/CourseForm";
+
 
 export const metadata = {
   title: 'Create Course',

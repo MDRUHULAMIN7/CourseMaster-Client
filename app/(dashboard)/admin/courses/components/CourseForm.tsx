@@ -88,34 +88,25 @@ export default function CourseForm({ course, mode }: CourseFormProps) {
 
   useEffect(() => {
     fetchCategories();
-    fetchInstructors();
   }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data.data?.categories || data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
+const fetchCategories = async () => {
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/categories?active=true`;
+    
+    const res = await fetch(apiUrl);
+    if (res.ok) {
+      const data = await res.json();
+      setCategories(data.data?.categories || data.data || []);
+    } else {
+      console.error('Failed to fetch categories, status:', res.status);
+      const errorText = await res.text();
+      setCategories([]);
     }
-  };
-
-  const fetchInstructors = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users?role=instructor`);
-      if (res.ok) {
-        const data = await res.json();
-        setInstructors(data.data?.users || data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching instructors:', error);
-      // Fallback to empty array
-      setInstructors([]);
-    }
-  };
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    setCategories([]);
+  }
+};
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof CourseFormData, string>> = {};

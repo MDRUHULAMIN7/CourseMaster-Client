@@ -85,7 +85,6 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const result = await getCourses(params);
 
-  // Handle error state
   if (result.error) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
@@ -135,8 +134,6 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   }
 
   const data = result.data;
-
-  // Handle empty data
   if (!data || !data.courses) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
@@ -164,7 +161,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+      
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Course Management</h1>
@@ -187,7 +184,6 @@ export default async function CoursesPage({ searchParams }: PageProps) {
             <CourseTable courses={data.courses} />
           </Suspense>
 
-          {/* Pagination */}
           {data.pagination && data.pagination.pages > 1 && (
             <div className="px-6 py-4 border-t border-gray-200">
               <Pagination
@@ -199,7 +195,6 @@ export default async function CoursesPage({ searchParams }: PageProps) {
           )}
         </div>
 
-        {/* Summary Stats */}
         {data.pagination && (
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
