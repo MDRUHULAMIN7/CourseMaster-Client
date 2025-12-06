@@ -12,21 +12,24 @@ Backend API running (CourseMaster-Server)
 Installation
 Clone the repository:
 
-bash
-git clone https://github.com/yourusername/CourseMaster-Client.git
+1. git clone https://github.com/yourusername/CourseMaster-Client.git
 cd CourseMaster-Client
+
+
 Install dependencies:
 
-bash
-npm install
+
+2. npm install
 Set up environment variables:
-Create a .env.local file in the root directory:
+Create a  .env.local file in the root directory:
 
 env
+
 NEXT_PUBLIC_API_URL=http://localhost:5000
+
 Start the development server:
 
-bash
+
 npm run dev
 Open your browser:
 Navigate to http://localhost:3000
