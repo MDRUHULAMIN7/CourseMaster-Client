@@ -28,7 +28,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ui-avatars.com',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thou-george-collect-inline.trycloudflare.com',
         pathname: '/**',
       },
       {
