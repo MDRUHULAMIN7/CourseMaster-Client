@@ -1,8 +1,4 @@
 CourseMaster-Client (Frontend)
-https://img.shields.io/badge/Next.js-13-black?logo=next.js&logoColor=white
-https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript&logoColor=white
-https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white
-https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?logo=tailwind-css&logoColor=white
 
 Overview
 CourseMaster-Client is the frontend application for the CourseMaster Learning Management System (LMS), built with Next.js 16, TypeScript, and Tailwind CSS. This application provides a modern, responsive interface for managing courses, students, batches, and enrollments.
