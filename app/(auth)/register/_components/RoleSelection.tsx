@@ -1,6 +1,6 @@
 // client/components/register/RoleSelection.tsx
 import { BookOpen, User } from 'lucide-react';
-import type { RegisterFormData } from '../../../types/Types';
+import type { RegisterFormData } from '../../../../types/Types';
 
 interface RoleSelectionProps {
   formData: RegisterFormData;
