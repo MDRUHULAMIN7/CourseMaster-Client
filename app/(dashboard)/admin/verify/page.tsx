@@ -87,8 +87,6 @@ export default function VerifyAdminPage() {
       const user = JSON.parse(userString);
       const userId = user._id || user.id;
 
-      console.log(" Sending passkey verification request...");
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/verify-passkey`, {
         method: "POST",
         headers: {
@@ -110,7 +108,6 @@ export default function VerifyAdminPage() {
         const adminToken = result.token || generateAdminToken(user);
         
         if (adminToken) {
-          // Save admin token for 6 hours
           localStorage.setItem("admin_token", adminToken);
           
           console.log(" Admin token saved:", adminToken.substring(0, 20) + "...");
@@ -133,8 +130,6 @@ export default function VerifyAdminPage() {
       setLoading(false);
     }
   };
-
-  // Client-side token generation function (যদি server থেকে না আসে)
   const generateAdminToken = (user: any): string => {
     try {
       const tokenData = {
@@ -143,13 +138,11 @@ export default function VerifyAdminPage() {
         role: user.role,
         verified: true,
         issuedAt: Date.now(),
-        expiresAt: Date.now() + 6 * 60 * 60 * 1000, // 6 hours
+        expiresAt: Date.now() + 1 * 60 * 60 * 1000, 
       };
       
       const tokenString = JSON.stringify(tokenData);
       const base64Token = btoa(encodeURIComponent(tokenString));
-      
-      // Add signature (simple example)
       const signature = btoa(`admin-${Date.now()}`);
       return `${base64Token}.${signature}`;
     } catch (err) {
@@ -158,18 +151,6 @@ export default function VerifyAdminPage() {
     }
   };
 
-  // Check if token is expired
-  const isTokenExpired = (token: string): boolean => {
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 2) return true;
-      
-      const decoded = JSON.parse(decodeURIComponent(atob(parts[0])));
-      return decoded.expiresAt < Date.now();
-    } catch {
-      return true;
-    }
-  };
 
   if (!userData) {
     return (

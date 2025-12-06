@@ -1,4 +1,4 @@
-// app/admin/_components/AdminLayout.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -41,7 +41,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     const checkAdminAccess = () => {
       try {
-        // Skip check for verify page
         if (pathname === "/admin/verify") {
           setLoading(false);
           return;
@@ -58,8 +57,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         try {
           const decoded: AdminTokenPayload = jwtDecode(adminToken);
           const currentTime = Date.now() / 1000;
-          
-          // Check if token is valid and not expired
           if (decoded.exp > currentTime && decoded.verified) {
             setLoading(false);
           } else {
@@ -109,7 +106,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     router.push("/");
   };
 
-  // Show loading state
   if (loading && pathname !== "/admin/verify") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -123,10 +119,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile sidebar backdrop */}
       {isMobile && sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          // className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          className="fixed inset-0 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -145,7 +141,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           }`}
         >
           <div className="flex h-full flex-col">
-            {/* Sidebar header */}
             <div className="flex h-16 items-center justify-between border-b px-4">
               <div className="flex items-center space-x-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
@@ -187,8 +182,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 );
               })}
             </nav>
-
-            {/* Sidebar footer */}
             <div className="border-t p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -215,7 +208,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className={`flex flex-1 flex-col w-full transition-all duration-300 ${
         pathname !== "/admin/verify" && sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'
       }`}>
-        {/* Header - Only show if not on verify page */}
         {pathname !== "/admin/verify" && (
           <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 lg:px-6">
             <div className="flex items-center">
@@ -225,13 +217,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <Menu className="h-6 w-6" />
               </button>
-              {/* এই লাইনটি সরিয়ে দিন বা কমেন্ট করুন */}
-              {/* <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="mr-3 hidden rounded-lg p-2 text-gray-500 hover:bg-gray-100 lg:block"
-              >
-                <Menu className="h-6 w-6" />
-              </button> */}
               <h1 className="text-lg font-semibold text-gray-900">
                 Admin Dashboard
               </h1>
@@ -248,7 +233,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </header>
         )}
 
-        {/* Main content area */}
         <main className={`flex-1 ${pathname !== "/admin/verify" ? 'overflow-y-auto p-4 lg:p-6 bg-gray-50' : ''}`}>
           <div className="mx-auto max-w-7xl">
             {children}

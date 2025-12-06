@@ -43,10 +43,7 @@ async function getCourses(params: SearchParams) {
       }
     );
 
-    // Get response text first to debug
     const responseText = await res.text();
-    console.log('API Response Status:', res.status);
-    console.log('API Response:', responseText);
 
     if (!res.ok) {
       let errorMessage = 'Failed to fetch courses';
@@ -54,7 +51,6 @@ async function getCourses(params: SearchParams) {
         const errorData = JSON.parse(responseText);
         errorMessage = errorData.message || errorMessage;
       } catch (e) {
-        // If response is not JSON, use the text
         errorMessage = responseText || errorMessage;
       }
       
@@ -65,7 +61,6 @@ async function getCourses(params: SearchParams) {
       };
     }
 
-    // Parse the successful response
     const data = JSON.parse(responseText);
     return {
       error: false,
